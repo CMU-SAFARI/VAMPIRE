@@ -1,3 +1,15 @@
+/*
+
+MAPPING.CPP
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
+
 #include "vampire.h"
 #include "helper.h"
 

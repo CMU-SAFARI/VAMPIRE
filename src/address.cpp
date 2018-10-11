@@ -1,6 +1,14 @@
-//
-// Created by suyash on 7/10/18.
-//
+/*
+
+ADDRESS.CPP
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
 
 #include "address.h"
 

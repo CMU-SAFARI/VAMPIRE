@@ -1,6 +1,14 @@
-//
-// Created by suyash on 7/6/18.
-//
+/*
+
+STATISTICS.CPP
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) 2018 SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
 
 #include "statistics.h"
 #include "vampire.h"

@@ -21,7 +21,7 @@ VAMPIRE includes the following major features that are not included in prior DRA
 
 
 For more information, please read our paper:
->S. Ghose, A. G. Yaglikci, R. Gupta, D. Lee, K. Kudrolli, W. X. Liu, H. Hassan, K. K. Chang, N. Chatterjee, A. Agrawal, M. O'Connor, O. Mutlu.
+>S. Ghose, A. G. Yağlıkçı, R. Gupta, D. Lee, K. Kudrolli, W. X. Liu, H. Hassan, K. K. Chang, N. Chatterjee, A. Agrawal, M. O'Connor, O. Mutlu.
 >"[**What Your DRAM Power Models Are Not Telling You: Lessons from a Detailed Experimental Study**](http://users.ece.cmu.edu/~saugatag/papers/18sigmetrics_vampire.pdf)".
 >In _Proceedings of the ACM International Conference on Measurement and Modeling of Computer Systems (SIGMETRICS)_, June 2018.
 >To be published in _Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS)_, Vol. 2, No. 3, December 2018.

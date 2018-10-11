@@ -1,4 +1,16 @@
 /*
+
+MAKE_SAMPLE_TRACE.CPP
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
+
+/*
  * tools/make_sample_trace.cpp: Generates random traces in different formats for VAMPIRE
  *
  * Usage:

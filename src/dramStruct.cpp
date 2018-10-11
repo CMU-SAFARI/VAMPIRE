@@ -1,6 +1,14 @@
-//
-// Created by suyash on 7/5/18.
-//
+/*
+
+DRAMSTRUCT.H
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
 
 #include "dramStruct.h"
 

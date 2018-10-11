@@ -1,6 +1,14 @@
-//
-// Created by suyash on 7/11/18.
-//
+/*
+
+MAIN.H
+
+VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+https://github.com/CMU-SAFARI/VAMPIRE
+
+Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zürich
+Released under the MIT License
+
+*/
 
 #ifndef VAMPIRE_MAIN_H
 #define VAMPIRE_MAIN_H
