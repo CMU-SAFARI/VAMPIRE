@@ -1,0 +1,6 @@
+*.bin
+vampire
+traceGen
+dramEnergy
+obj/*
+.idea/
