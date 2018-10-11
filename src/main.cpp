@@ -25,17 +25,16 @@ T get_param(const std::string *refEnumArr, const std::string paramStr, std::stri
 void print_help() {
     const char *helpText =
             "usage:\n"
-            "   vampire [options] -f <trace_file_name> -p {BINARY|ASCII} -c <config_file> -d {RD_WR|WR|MEAN|DIST}\n"
+            "   vampire -f <trace_file_name> -c <config_file> -d {RD_WR|WR|MEAN|DIST} -p {BINARY|ASCII} [-v {A|B|C}] [-s]\n"
             "\n"
             "options: \n"
             "   -f <trace_file_name>                Trace file to parse\n"
             "   -c <config_file>                    Config file\n"
-            "   -d {RD_WR|WR|MEAN|DIST}             Data dependency model\n"
+            "   -d {MEAN|DIST|RD_WR|WR}             Data dependency model\n"
             "   -p {BINARY|ASCII}                   Specifies parser to be used (Note: Current traceGen only generates binary traces)\n"
             "   -v {A|B|C}                          Specifies vendor for calculations, default: A\n"
             // "   -e {BDI|CUSTOM|CUSTOM_MAX|NONE}     Specifies encoding, default: NONE\n"
-            "   -s                                  Enables structural variations\n"
-            "   -e {NONE|BDI|CUSTOM|CUSTOM_ADV}     Specifies the encoding type to be used.\n";
+            "   -s                                  Enables structural variations\n";
     std::cout << helpText;
 }
 
