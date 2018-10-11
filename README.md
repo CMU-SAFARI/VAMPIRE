@@ -46,7 +46,9 @@ VAMPIRE requires an input file that contains a trace (i.e., list) of DDR3 DRAM c
 
 #### Binary Trace Format
 
+```
 <64-bit timestamp of current cycle><33 bits of zero padding><command type (3 bits)><channel ID (2 bits)><rank ID (2 bits)><bank ID (3 bits)><row ID (16 bits)><column number (7 bits)>[<64-byte data value; optional, for reads and writes only>]
+```
 
 Valid values for the command type (in binary) are:
 1. 000: RD
@@ -58,7 +60,9 @@ Valid values for the command type (in binary) are:
 
 #### ASCII Trace Format
 
+```
 <timestamp (i.e., current cycle)>,<command>,<bank>[,<data>]
+```
 
 #### Generating Random Binary Test Traces Using `traceGen`
 ```shell
