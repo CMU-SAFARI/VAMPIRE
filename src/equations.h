@@ -19,6 +19,8 @@ Released under the MIT License
 #include "config.h"
 #include "dramStruct.h"
 
+#include <memory>
+
 class Equations {
 protected:
     Statistics statistics;
@@ -30,7 +32,7 @@ protected:
     StructVar structVar;
 
     /* Lookup values for current variation based on structural variations */
-    std::shared_ptr<float[]> rdStructVarCurrent[int(VendorType::MAX)];                // For 8 banks
+    std::vector<float> rdStructVarCurrent[int(VendorType::MAX)];                // For 8 banks
     std::function<float(int)> actStructVarCurrent[int(VendorType::MAX)]; // For current based on LR model
 
 public:

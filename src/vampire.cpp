@@ -269,13 +269,13 @@ void Vampire::init_lambdas(){
 
 void Vampire::init_latencies() {
     // RD, WR, ACT, PRE
-    latency[int(VendorType::A)].reset(new float[int(CommandType::MAX)]{
+    latency[int(VendorType::A)]= (*new std::vector<float>{
             25.0, 25.0, 15.0, 15.0 //ns
     });
-    latency[int(VendorType::B)].reset(new float[int(CommandType::MAX)]{
+    latency[int(VendorType::B)]= (*new std::vector<float>{
             25.0, 25.0, 15.0, 15.0 //ns
     });
-    latency[int(VendorType::C)].reset(new float[int(CommandType::MAX)]{
+    latency[int(VendorType::C)]= (*new std::vector<float>   {
             23.125, 23.125, 13.125, 13.125 //ns
     });
 }
