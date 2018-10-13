@@ -18,8 +18,8 @@ Released under the MIT License
 #include "helper.h"
 
 Config::Config() {
-    setBitDist.reset(new std::vector<float>(0));
-    toggleDist.reset(new std::vector<float>(0));
+    setBitDist.assign({});
+    toggleDist.assign({});
 }
 
 Config::Config(const std::string& fname) : Config() {
@@ -90,8 +90,8 @@ void Config::parse(const std::string& fname) {
             // Convert std::vector<std::string> to std::vector<float>
             assert(tokens.size() == (NUM_OF_BITS+1+1) && "Distribution should have exactly 513 values.");
 
-            setBitDist->resize(tokens.size()-1); // -1 for the key
-            std::transform(tokens.begin()+1, tokens.end(), setBitDist->begin(), [](const std::string& val)
+            setBitDist.resize(tokens.size()-1); // -1 for the key
+            std::transform(tokens.begin()+1, tokens.end(), setBitDist.begin(), [](const std::string& val)
             {
                 return std::stof(val);
             });
@@ -99,8 +99,8 @@ void Config::parse(const std::string& fname) {
             // Convert std::vector<std::string> to std::vector<float>
             assert(tokens.size() == (NUM_OF_BITS+1+1) && "Distribution should have exactly 513 values.");
 
-            toggleDist->resize(tokens.size()-1); // -1 for the key
-            std::transform(tokens.begin()+1, tokens.end(), toggleDist->begin(), [](const std::string& val)
+            toggleDist.resize(tokens.size()-1); // -1 for the key
+            std::transform(tokens.begin()+1, tokens.end(), toggleDist.begin(), [](const std::string& val)
             {
                 return std::stof(val);
             });
@@ -238,20 +238,20 @@ void Config::setToggleArrSizeMult(int toggleArrSizeMult) {
     Config::toggleArrSizeMult = toggleArrSizeMult;
 }
 
-std::vector<float> *Config::getSetBitDist() const {
-    return setBitDist.get();
+std::vector<float> *Config::getSetBitDist() {
+    return &setBitDist;
 }
 
 void Config::setSetBitDist(std::vector<float> *setBitDist) {
-    Config::setBitDist.reset(setBitDist);
+    Config::setBitDist = (*setBitDist);
 }
 
-std::vector<float> *Config::getToggleDist() const {
-    return toggleDist.get();
+std::vector<float> *Config::getToggleDist() {
+    return &toggleDist;
 }
 
 void Config::setToggleDist(std::vector<float> *toggleDist) {
-    Config::toggleDist.reset(toggleDist);
+    Config::toggleDist = (*toggleDist);
 }
 
 int Config::getAvgNumSetBits() const {

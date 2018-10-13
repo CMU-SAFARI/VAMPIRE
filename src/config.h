@@ -36,8 +36,8 @@ private:
     int setBitArrSizeMult = 1000;
     int toggleArrSizeMult = 1000;
 
-    std::shared_ptr<std::vector<float>> setBitDist;
-    std::shared_ptr<std::vector<float>> toggleDist;
+    std::vector<float> setBitDist;
+    std::vector<float> toggleDist;
 
     /* For TraceType::RATIO */
     int avgNumSetBits    = 0;
@@ -89,10 +89,10 @@ public:
     int getToggleArrSizeMult() const;
     void setToggleArrSizeMult(int toggleArrSizeMult);
 
-    std::vector<float> *getSetBitDist() const;
+    std::vector<float> *getSetBitDist();
     void setSetBitDist(std::vector<float> *setBitDist);
 
-    std::vector<float> *getToggleDist() const;
+    std::vector<float> *getToggleDist();
     void setToggleDist(std::vector<float> *toggleDist);
 
     int getAvgNumSetBits() const;
