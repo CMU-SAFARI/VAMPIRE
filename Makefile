@@ -7,19 +7,20 @@ TRACE_GEN := $(TOOLSDIR)/make_sample_trace.cpp
 SRCS := $(filter-out $(MAIN), $(wildcard $(SRCDIR)/*.cpp))
 OBJS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
-CXX_COMMON_FLAGS := -std=c++11
-CXXFLAGS := -Og -g -Wall $(CXX_COMMON_FLAGS)
+CXXFLAGS += -std=c++11
 
-.PHONY: all clean depend
+.PHONY: all clean depend debug backend
 
-all: depend vampire sampletr
+# all: Default compilation rule, generates binary with optimzation, not suitable for debugging
+all: CXXFLAGS += -O3 -march=native
+all: backend
 
-debug: all
-ifeq ($(CXX), clang++)
-CXXFLAGS := -O0 -g $(CXX_COMMON_FLAGS)
-else
-CXXFLAGS := -Og -g $(CXX_COMMON_FLAGS)
-endif
+# debug: Generates a binary which is easier to debug
+debug: CXXFLAGS += -O0 -g
+debug: backend
+
+# Actual compilation is handled by function past this comment
+backend: depend vampire sampletr
 
 sampletr: traceGen
 

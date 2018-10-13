@@ -19,15 +19,15 @@ Released under the MIT License
 /********************************************************************/
 void Equations::init_struct_var() {
     /* Initialize RD current values for the 8 banks */
-    rdStructVarCurrent[int(VendorType::A)].reset(new float[8]{
+    rdStructVarCurrent[int(VendorType::A)].assign({
             241.6258f/241.6258f, 243.7769f/241.6258f, 255.7692f/241.6258f, 259.8341f/241.6258f,
             243.5455f/241.6258f, 246.2226f/241.6258f, 256.0077f/241.6258f, 260.2505f/241.6258f
     });
-    rdStructVarCurrent[int(VendorType::B)].reset(new float[8]{
+    rdStructVarCurrent[int(VendorType::B)].assign({
             222.4698f/222.4698f, 228.8632f/222.4698f, 225.5057f/222.4698f, 226.3366f/222.4698f,
             227.9259f/222.4698f, 225.7385f/222.4698f, 225.361f/222.4698f, 231.3116f/222.4698f
     });
-    rdStructVarCurrent[int(VendorType::C)].reset(new float[8]{
+    rdStructVarCurrent[int(VendorType::C)].assign({
             222.4698f/222.4698f, 228.8632f/222.4698f, 225.5057f/222.4698f, 226.3366f/222.4698f,
             227.9259f/222.4698f, 225.7385f/222.4698f, 225.3615f/222.4698f, 231.3116f/222.4698f
     });
