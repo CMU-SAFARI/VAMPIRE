@@ -159,7 +159,7 @@ bool BinParser::parse(bool &wasDataRead, Command &cmd) {
     bool isWriteCmd = cmd.type == CommandType::WR;
 
     if ((isWriteCmd && traceType == TraceType::WR) || (isIOCmd && traceType == TraceType::RD_WR)){ /* Also get the data to be written */
-        auto *data_c = new char[sizeof(uint32_t) * 16]; // 64 bytes
+        char data_c[sizeof(uint32_t) * 16]; // 64 bytes
         file->read(data_c, sizeof(uint32_t)*16);
         auto data = (uint32_t*)data_c;
 
@@ -180,6 +180,10 @@ bool BinParser::parse(bool &wasDataRead, Command &cmd) {
     } else {
         wasDataRead = false;
     }
+
+    delete[] bytes_read_c;
+    delete[] time_a;
+    delete time;
     return true;
 }
 
