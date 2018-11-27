@@ -12,7 +12,6 @@ Released under the MIT License
 
 #include <iostream>
 #include "dramSpec.h"
-#include "helper.h"
 
 DramSpec::DramSpec() {
     cmdLength_ptr.reset(new std::vector<double_t>(8));
@@ -118,4 +117,123 @@ DramSpec_C::DramSpec_C() : DramSpec() {
 
     actStandbyEnergy = 112.6297;
     preStandbyEnergy = 122.75881;
+}
+
+DramSpec_Cust::DramSpec_Cust(const std::string &fname) : DramSpec() {
+    /* Init everything to default value */
+    auto &cmdLength = *cmdLength_ptr;
+    auto &cmdCurrent = *cmdCurrent_ptr;
+
+    cmdLength.resize(static_cast<uint64_t>(CommandType::MAX));
+    cmdCurrent.resize(static_cast<uint64_t>(CommandType::MAX));
+    for (int i = 0; i < int(CommandType::MAX); i++) {
+        cmdLength[i] = 0;
+        cmdCurrent[i] = 0;
+    }
+
+    /* Start parsing the dramSpec file */
+    std::ifstream file(fname);
+
+    if (!file.good()) {
+        msg::warning("Unable to locate the specified DramSpec file, see 'vampire --help'.");
+    }
+
+    std::string line;
+    while (getline(file, line)) {
+        std::string origLine = line;
+
+        char delim[] = " \t=";
+        std::vector<std::string> tokens;
+
+        bool lineParsed = false;
+
+        while (true) {
+            size_t start = line.find_first_not_of(delim);
+            if (start == std::string::npos)
+                break;
+            size_t end = line.find_first_not_of(delim, start);
+            if (end == std::string::npos) {
+                tokens.push_back(line.substr(start));
+                break;
+            }
+
+            tokens.push_back(line.substr(start, end-start));
+            line = line.substr(end);
+        }
+
+        /* empty line */
+        if (tokens.empty())
+            continue;
+
+        /* comment line */
+        if (tokens[0][0] == '#')
+            continue;
+
+        if (tokens[0] == "vdd") {
+            vdd = std::stod(tokens[1]);
+            lineParsed = true;
+        }
+
+        // Parse cmdLength
+        std::string cmdLengthPrefix = "cmdLength";
+        /* To find if cmdLength is a prefix of tokens[1] */
+        auto cmdLengthMatch = std::mismatch(cmdLengthPrefix.begin(), cmdLengthPrefix.end(), tokens[0].begin());
+
+        if (cmdLengthMatch.first == cmdLengthPrefix.end()) {
+            /* Found cmdLengthPrefix as the prefix of tokens[0] */
+            std::vector<std::string> splitToken = Helper::splitStr(tokens[0], '.');
+
+            int cmdLoc = Helper::findInArr<std::string>(&commandString[0], splitToken[1], int(CommandType::MAX));
+
+            if (cmdLoc != -1){
+                cmdLength[int(static_cast<CommandType>(cmdLoc))] = std::stod(splitToken[1]);
+            } else {
+                msg::error("DramSpec: Unable to parse `" + origLine + "', `" + splitToken[1] + "' is not a valid CommandType.");
+            }
+            lineParsed = true;
+        }
+
+        // Parse cmdLength
+        std::string cmdCurrentPrefix = "cmdCurrent";
+        /* To find if cmdLength is a prefix of tokens[1] */
+        auto cmdCurrentMatch = std::mismatch(cmdCurrentPrefix.begin(), cmdCurrentPrefix.end(), tokens[0].begin());
+
+        if (cmdCurrentMatch.first == cmdCurrentPrefix.end()) {
+            /* Found cmdCurrentPrefix as the prefix of tokens[0] */
+            std::vector<std::string> splitToken = Helper::splitStr(tokens[0], '.');
+
+            int cmdLoc = Helper::findInArr<std::string>(&commandString[0], splitToken[1], int(CommandType::MAX));
+
+            if (cmdLoc != -1){
+                cmdCurrent[int(static_cast<CommandType>(cmdLoc))] = std::stod(splitToken[1]);
+            } else {
+                msg::error("DramSpec: Unable to parse `" + origLine + "', `" + splitToken[1] + "' is not a valid CommandType.");
+            }
+            lineParsed = true;
+        }
+
+        if (tokens[0] == "actCmdEnergy") {
+            actCmdEnergy = std::stod(tokens[1]);
+            lineParsed = true;
+        }
+
+        if (tokens[0] == "preCmdEnergy") {
+            preCmdEnergy = std::stod(tokens[1]);
+            lineParsed = true;
+        }
+
+        if (tokens[0] == "actStandbyEnergy") {
+            actStandbyEnergy = std::stod(tokens[1]);
+            lineParsed = true;
+        }
+
+        if (tokens[0] == "preStandbyEnergy") {
+            preStandbyEnergy = std::stod(tokens[1]);
+            lineParsed = true;
+        }
+
+        if (!lineParsed) {
+            msg::warning("DramSpec: Unable to parse `" + origLine + "', unknown token found.");
+        }
+    }
 }

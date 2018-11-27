@@ -29,6 +29,7 @@ Vampire::~Vampire() {
 
     delete traceFilename;
     delete configFilename;
+    delete dramSpecFilename;
 
     delete dramSpec;
     delete dramStruct;
@@ -316,6 +317,12 @@ int Vampire::set_values(){
         case (int(VendorType::C)): {
             dramSpec = new DramSpec_C();
             break;
+        }
+        case (int(VendorType::Cust)) : {
+            if (dramSpecFilename == nullptr) {
+                msg::error("No dramSpec file specified with Cust Vender, see vampire --help for more details.");
+            }
+            dramSpec = new DramSpec_Cust(*dramSpecFilename);
         }
     }
 

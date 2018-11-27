@@ -49,6 +49,8 @@ public:
     std::string *traceFilename = nullptr;
     std::string *configFilename = nullptr;
 
+    std::string *dramSpecFilename = nullptr;
+
     Config *configs;
     Parser *parser;
     DramSpec *dramSpec = nullptr;

@@ -19,6 +19,7 @@ Released under the MIT License
 #include <cmath>
 #include <memory>
 #include "consts.h"
+#include "helper.h"
 
 class DramSpec {
 private:
@@ -71,6 +72,15 @@ protected:
 public:
     DramSpec_C();
     ~DramSpec_C() = default;
+};
+
+// For reading specifications from a file
+class DramSpec_Cust : public DramSpec {
+private:
+protected:
+public:
+    DramSpec_Cust(const std::string &fname);
+    ~DramSpec_Cust() = default;
 };
 
 #endif //VAMPIRE_DRAMSPEC_H

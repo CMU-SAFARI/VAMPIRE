@@ -40,6 +40,35 @@ std::cout << std::endl;
 
 namespace Helper {
     int verify_add(CommandType request, MappedAdd reqAdd, Config &configs);
+    /* Results a vector of strings split at token */
+    std::vector<std::string> splitStr(const std::string str, const char token);
+
+    /* Finds location of an element in a vector, returns -1 if not found */
+    template <typename T>
+    int findInVect(const std::vector<T> vect, const T toFind) {
+        int loc = -1, it = 0;
+        for (auto elem : commandString) {
+            if (elem == toFind) {
+                loc = it;
+                break;
+            }
+            it++;
+        }
+        return it;
+    }
+
+    /* Finds location of an element in an array, returns -1 if not found */
+    template <typename T>
+    int findInArr(const T *arr, const T toFind, const int len) {
+        int loc = -1;
+        for (int i = 0; i < len; i++) {
+            if (arr[i] == toFind) {
+                loc = i;
+                break;
+            }
+        }
+        return loc;
+    }
 }
 
 class IO_data{
