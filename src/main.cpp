@@ -97,7 +97,7 @@ void parse_args(int argc, char *argv[], Vampire &dram) {
 
         if (strcmp(argv[i], "-dramSpec") == 0) {
             msg::error(argc <= i+1, "Option '-dramSpec': DramSpec file not specified.");
-            msg::info("dramSpec: " + std::string(argv[i+1]));
+            msg::info("dramSpec file: " + std::string(argv[i+1]));
             dram.dramSpecFilename = new std::string(argv[i+1]);
         }
 

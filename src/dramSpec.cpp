@@ -151,7 +151,7 @@ DramSpec_Cust::DramSpec_Cust(const std::string &fname) : DramSpec() {
             size_t start = line.find_first_not_of(delim);
             if (start == std::string::npos)
                 break;
-            size_t end = line.find_first_not_of(delim, start);
+            size_t end = line.find_first_of(delim, start);
             if (end == std::string::npos) {
                 tokens.push_back(line.substr(start));
                 break;
@@ -186,7 +186,7 @@ DramSpec_Cust::DramSpec_Cust(const std::string &fname) : DramSpec() {
             int cmdLoc = Helper::findInArr<std::string>(&commandString[0], splitToken[1], int(CommandType::MAX));
 
             if (cmdLoc != -1){
-                cmdLength[int(static_cast<CommandType>(cmdLoc))] = std::stod(splitToken[1]);
+                cmdLength[int(static_cast<CommandType>(cmdLoc))] = std::stod(tokens[1]);
             } else {
                 msg::error("DramSpec: Unable to parse `" + origLine + "', `" + splitToken[1] + "' is not a valid CommandType.");
             }
@@ -205,7 +205,7 @@ DramSpec_Cust::DramSpec_Cust(const std::string &fname) : DramSpec() {
             int cmdLoc = Helper::findInArr<std::string>(&commandString[0], splitToken[1], int(CommandType::MAX));
 
             if (cmdLoc != -1){
-                cmdCurrent[int(static_cast<CommandType>(cmdLoc))] = std::stod(splitToken[1]);
+                cmdCurrent[int(static_cast<CommandType>(cmdLoc))] = std::stod(tokens[1]);
             } else {
                 msg::error("DramSpec: Unable to parse `" + origLine + "', `" + splitToken[1] + "' is not a valid CommandType.");
             }
