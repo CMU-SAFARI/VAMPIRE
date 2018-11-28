@@ -6,3 +6,8 @@ traceGen
 dramEnergy
 obj/*
 .idea/
+*.key
+
+# Emacs 
+*~
+.#*#
