@@ -7,7 +7,7 @@ and is compatible with widely-used memory simulators such as
 [Ramulator](https://github.com/CMU-SAFARI/ramulator/) and
 [DRAMSim2](https://github.com/umd-memsys/DRAMSim2/).
 
-*Current version: 1.0.1 (released October 13, 2018)*
+*Current version: 1.1.0 (released November 28, 2018)*
 
 
 ## Key Features
@@ -74,7 +74,7 @@ This generates a number of trace files with 10000 random requests in each trace 
 
 ### Running VAMPIRE
 ```shell
-./vampire -f <file_name> -c <config_file> -d {MEAN|DIST|WR|RD_WR} -p {BINARY|ASCII} [-v {A|B|C)] [-s]
+./vampire -f <file_name> -c <config_file> -d {MEAN|DIST|WR|RD_WR} -p {BINARY|ASCII} [-v {A|B|C)] [-s] [-dramSpec <dramspec_file>]
 ```
 
 #### Required Command-Line Arguments
@@ -89,7 +89,9 @@ This generates a number of trace files with 10000 random requests in each trace 
 #### Optional Command-Line Arguments
 
 ```
-   -v {A|B|C}                          Vendor to perform power calculations for (default: A; see the paper for more information)
+   -v {A|B|C|Cust}                     Vendor to perform power calculations for (default: A; see the paper for more information). 
+                                       Cust vendor requires an additional dramspec file, specified using -dramSpec option.
+   -dramSpec <dramspec_file>           Specifies DRAM specifications for calculations, required for Cust vendor type (An example in dramSpec/example.cfg).
    -s                                  Enables structural variation modeling (default: disabled)
 ```
 #### Data Dependency Models
@@ -141,3 +143,5 @@ Contributors include:
 - A. Giray Yağlıkçı
 
 VAMPIRE is released under the MIT License.
+
+
