@@ -263,12 +263,11 @@ double_t Equations::calc_rd_wr_energy(CommandType request, MappedAdd add, unsign
     current_slope        = lookup_current_slope(request, add, IO_buffer.prevAdd);
     current_toggle_slope = lookup_toggle_current_slope(request, IO_buffer.prevAdd, add);
 
-#ifdef DEBUG
-    std::cout
+    dbgstream
             << "current_intercept: " << current_intercept
             << ", current_slope: " << current_slope
             << ", current_toggle_slope :" << current_toggle_slope;
-#endif
+
     if ((request == CommandType::WR) && (encodingType == EncodingType::CUSTOM_ADV))
         numSetBits = 512 - numSetBits;
 

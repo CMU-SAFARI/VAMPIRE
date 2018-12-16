@@ -87,9 +87,7 @@ void BinParser::parse_data(uint32_t data[16]) {
  */
 
 bool BinParser::parse(bool &wasDataRead, Command &cmd) {
-#ifdef DEBUG
-    std::cout << ", tellg: " << file->tellg();
-#endif
+    dbgstream << ", tellg: " << file->tellg();
 
     // Return false if file is completely read
     if (file->tellg() == fileSize)
@@ -167,13 +165,11 @@ bool BinParser::parse(bool &wasDataRead, Command &cmd) {
             cmd.data[i] = data[i];
         }
 
-#ifdef DEBUG
-        std::cout << std::endl << "dataread: " << std::hex;
+        dbgstream << std::endl << "dataread: " << std::hex;
         for (int i = 0; i < 16; i++) {
-            std::cout << data[i];
+            dbgstream << data[i];
         }
-        std::cout << std::dec << std::endl;
-#endif
+        dbgstream << std::dec << std::endl;
 
         wasDataRead = true;
 
@@ -300,10 +296,10 @@ bool AsciiParser::parse(bool &wasDataRead, Command &cmd) {
         }
     }
     verify_cmd(cmd.add, cmd.type);
-#ifdef DEBUG
-    std::cout << line << std::endl;
-    std::cout << "result:: " << result << std::endl;
-#endif
+
+    dbgstream << line << std::endl;
+    dbgstream << "result:: " << result << std::endl;
+
     return result;
 }
 

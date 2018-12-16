@@ -22,21 +22,7 @@ Released under the MIT License
 #include "consts.h"
 #include "address.h"
 #include "config.h"
-
-#ifdef DEBUG
-#define debug_nl__(color, val) \
-std::cout << (color) << (val) << RESET << std::endl;
-
-#define debug__(color, val) \
-std::cout << (color) << (val) << RESET;
-
-#define debug_nl_only__() \
-std::cout << std::endl;
-#else
-#define debug_nl__(val)
-#define debug__(val)
-#define debug_nl_only_()
-#endif
+#include "globalDebug.h"
 
 namespace Helper {
     int verify_add(CommandType request, MappedAdd reqAdd, Config &configs);

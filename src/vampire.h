@@ -33,6 +33,7 @@ Released under the MIT License
 #include "parser.h"
 #include "statistics.h"
 #include "command.h"
+#include "globalDebug.h"
 
 class Vampire {
 
@@ -75,7 +76,7 @@ protected:
     void init_latencies();
 
     /* Stores latency of each operation */
-    std::vector<float> latency[int(VendorType::MAX)];
+    //std::vector<float> latency[int(VendorType::MAX)];
 
     /* Calculates # of set bits in data */
     std::function<unsigned int(unsigned int[16])> getSetBits[int(TraceType::MAX)];
