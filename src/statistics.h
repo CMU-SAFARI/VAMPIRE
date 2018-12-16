@@ -37,6 +37,7 @@ public:
     ScalarStat(T value, std::string name, std::string unit, std::string description);
 
     std::string toString() const;
+    std::string toCsvString() const;
 
     /* Operators */
     operator T()   {
@@ -120,6 +121,9 @@ public:
         return ss.str();
     }
 
+    std::string toCsvString() const;
+    std::string toCsvString(std::function<std::string(uint64_t)> mappingFun) const;
+
     /* For C++11 range based loops */
     typename std::vector<T>::iterator begin() {return this->members->begin();};
     typename std::vector<T>::iterator end() {return this->members->end();};
@@ -143,7 +147,8 @@ std::ostream& operator<<(std::ostream& ostr, VectorStat<T>& stat) {
 class Vampire;
 class Statistics {
 private:
-    uint64_t *structCount;
+    uint64_t *structCount = nullptr;
+    std::string *csvFilename = nullptr;
 protected:
 public:
     std::shared_ptr<ScalarStat<uint64_t>>    totalActStandbyCycles;
@@ -165,11 +170,12 @@ public:
     std::shared_ptr<ScalarStat<double_t>>    avgPower;
     std::shared_ptr<ScalarStat<double_t>>    avgCurrent;
 
-    explicit Statistics(Statistics &statistics) = default;
-    explicit Statistics(uint64_t (&structCount)[int(Level::MAX)]);
+    explicit Statistics(Statistics &statistics, std::string *csvFilename) : csvFilename(csvFilename) {}
+    explicit Statistics(uint64_t (&structCount)[int(Level::MAX)], std::string *csvFilename);
     ~Statistics() = default;
     
     void print_stats() const;
+    void write_csv(std::string *csvFilename) const;
     void calculateTotal(DramSpec &dramSpec, uint64_t endTime);
 };
 

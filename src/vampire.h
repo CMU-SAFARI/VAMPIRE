@@ -51,6 +51,7 @@ public:
     std::string *configFilename = nullptr;
 
     std::string *dramSpecFilename = nullptr;
+    std::string *csvFilename = nullptr;
 
     Config *configs;
     Parser *parser;

@@ -35,7 +35,10 @@ void print_help() {
             "   -v {A|B|C|Cust}                     Specifies vendor for calculations, default: A. Cust vendor requires an additional dramspec file, specified using -dramSpec option.\n"
             "   -dramSpec <dramspec_file>           Specifies DRAM specifications for calculations, required for Cust vendor type\n"
             // "   -e {BDI|CUSTOM|CUSTOM_MAX|NONE}     Specifies encoding, default: NONE\n"
-            "   -s                                  Enables structural variations\n";
+            "   -s                                  Enables structural variations\n"
+            "   -csv <csv_filename>                 Specifies filename for VAMPIRE to write stats as csv to. If the file exists, it is overwritten else a new file is\n"
+            "                                       created.\n";
+    
     std::cout << helpText;
 }
 
@@ -101,6 +104,11 @@ void parse_args(int argc, char *argv[], Vampire &dram) {
             dram.dramSpecFilename = new std::string(argv[i+1]);
         }
 
+        if (strcmp(argv[i], "-csv") == 0) {
+            msg::error(argc <= i+1, "Option '-csv': csv ouput filename not specified.");
+            msg::info("Output csv file: " + std::string(argv[i+1]));
+            dram.csvFilename = new std::string(argv[i+1]);
+        }
     }
 }
 

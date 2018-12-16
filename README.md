@@ -92,7 +92,9 @@ This generates a number of trace files with 10000 random requests in each trace 
    -v {A|B|C|Cust}                     Vendor to perform power calculations for (default: A; see the paper for more information). 
                                        Cust vendor requires an additional dramspec file, specified using -dramSpec option.
    -dramSpec <dramspec_file>           Specifies DRAM specifications for calculations, required for Cust vendor type (An example in dramSpec/example.cfg).
-   -s                                  Enables structural variation modeling (default: disabled)
+   -s                                  Enables structural variation modeling (default: disabled).
+   -csv <csv_filename>                 Specifies filename for VAMPIRE to write stats as csv to. If the file exists, it is overwritten else a new file is 
+                                       created.               
 ```
 #### Data Dependency Models
 1. __MEAN__:

@@ -327,7 +327,7 @@ int Vampire::set_values(){
     }
 
     /* Initialize all the statistics */
-    statistics = new Statistics(configs->structCount);
+    statistics = new Statistics(configs->structCount, this->csvFilename);
     equations = new Equations(*statistics, *dramSpec, *configs, vendorType, traceType, memory, structVar);
     dramStruct = new DramStruct();
     return 0;
@@ -704,6 +704,11 @@ int Vampire::estimate(){
     statistics->calculateTotal(*dramSpec, lastCmdEndTime);
 
     statistics->print_stats();
+
+    if (this->csvFilename != nullptr) {
+        statistics->write_csv(csvFilename);
+    }
+
     return 0;
 }
 

@@ -39,7 +39,8 @@ static const int BURST_LENGTH = 8; // TODO: make more generalized and read from 
 /* Macros */
 #define FUNCTION_STR std::string(__FUNCTION__)
 #define FILE_STR     std::string(__FILE__)
-#define LINE_STR     std::string(__LINE__)
+#define LINE_STR     std::to_string(__LINE__)
+#define DBG_STR      std::string(FILE_STR + ":" + LINE_STR + "::" + FUNCTION_STR)
 
 /***********************************/
 /* Enums for handling *everything* */
