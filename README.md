@@ -71,6 +71,14 @@ Valid values for the command type (in binary) are:
 
 This generates a number of trace files with 10000 random requests in each trace file.
 
+### Piping commands to VAMPIRE
+VAMPIRE supports reading trace commands from pipe (/dev/stdin) instead of a trace file, allowing VAMPIRE to process the commands as they are fed. To read input from pipe use `/dev/stdin` as the input trace file (option `-f`) and pipe the commands to VAMPIRE binary.
+
+e.g.  
+```shell
+cat sample_vampire_trace.trace | ./vampire -f /dev/stdin [options]
+```
+
 
 ### Running VAMPIRE
 ```shell
