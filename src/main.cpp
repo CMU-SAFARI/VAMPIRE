@@ -38,7 +38,7 @@ void print_help() {
             "   -s                                  Enables structural variations\n"
             "   -csv <csv_filename>                 Specifies filename for VAMPIRE to write stats as csv to. If the file exists, it is overwritten else a new file is\n"
             "                                       created.\n";
-    
+
     std::cout << helpText;
 }
 

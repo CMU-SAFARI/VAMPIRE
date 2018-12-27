@@ -276,7 +276,9 @@ bool AsciiParser::parse(bool &wasDataRead, Command &cmd) {
                     // Reads data in hexadecimal without the '0x' or any other suffix
                     // Error if data string is not of length
                     //   burstLength*sizeof(unsigned int)*(number of hex bits in a byte)
-                    msg::error(token.length() != 8 * sizeof(unsigned long) * 2, "Malformed data supplied");
+		    msg::error(token.length() != 8 * sizeof(unsigned long) * 2,
+			       "Data size for command at time `" + std::to_string(cmd.issueTime) +
+			       "' is not of length " + std::to_string(8 * sizeof(unsigned long) * 2));
 
                     // Extract the data from the string in chunks of 32 bits
                     for (int dataElementCount = 0; dataElementCount < 16; dataElementCount++) {

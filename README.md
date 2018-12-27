@@ -69,18 +69,10 @@ Valid values for the command type (in binary) are:
 ./traceGen 10000
 ```
 
-This generates a number of trace files with 10000 random requests in each trace file.
-
-### Piping commands to VAMPIRE
-VAMPIRE supports reading trace commands from pipe (/dev/stdin) instead of a trace file, allowing VAMPIRE to process the commands as they are fed. To read input from pipe use `/dev/stdin` as the input trace file (option `-f`) and pipe the commands to VAMPIRE binary.
-
-e.g.  
-```shell
-cat sample_vampire_trace.trace | ./vampire -f /dev/stdin [options]
-```
-
-
+This generates a number of trace files with 10000 random requests in each trace file.  
+  
 ### Running VAMPIRE
+
 ```shell
 ./vampire -f <file_name> -c <config_file> -d {MEAN|DIST|WR|RD_WR} -p {BINARY|ASCII} [-v {A|B|C)] [-s] [-dramSpec <dramspec_file>]
 ```
@@ -135,6 +127,13 @@ The following command uses the RD_WR data dependency model, a compatible RD_WR b
 ./vampire -f ./trace_rd_wr_t.bin -v B -c configs/default.cfg -d RD_WR
 ```
 
+### Piping commands to VAMPIRE
+VAMPIRE supports reading trace commands from pipe (`/dev/stdin`) instead of a trace file, allowing VAMPIRE to process the commands as they are fed. To read input from pipe use `/dev/stdin` as the input trace file (option `-f`) and pipe the commands to VAMPIRE binary.
+
+e.g.  
+```shell
+cat sample_vampire_trace.trace | ./vampire -f /dev/stdin [options]
+```
 
 ## Summary of VAMPIRE Execution Flow
 A short description of the execution flow of VAMPIRE through the source code is available [here](src/README.md).
