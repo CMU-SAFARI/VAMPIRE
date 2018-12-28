@@ -36,6 +36,11 @@ make -j
 
 *Note: VAMPIRE currently requires a C++11 compiler (e.g., `clang++`, `g++-5`).*
 
+### Running tests
+VAMPIRE includes some inbuilt test to verify functional correctness, however please note that these tests do not cover 100% of the functionalities.  
+```shell
+make test
+```
 
 ### Generating an Input Trace File
 
