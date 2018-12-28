@@ -16,7 +16,7 @@ all: CXXFLAGS += -O3 -march=native
 all: backend
 
 # debug: Generates a binary which is easier to debug
-debug: CXXFLAGS += -O0 -g
+debug: CXXFLAGS += -O0 -g -D GLOBAL_DEBUG
 debug: backend
 
 # Actual compilation is handled by function past this comment
@@ -36,7 +36,7 @@ depend: $(OBJDIR)/.depend
 $(OBJDIR)/.depend: $(SRCS)
 	@mkdir -p $(OBJDIR)
 	@rm -f $(OBJDIR)/.depend
-	@$(foreach SRC, $(SRCS), $(CXX) $(CXXFLAGS) -DVAMPIRE -MM -MT $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC)) $(SRC) >> $(OBJDIR)/.depend ;)
+	@$(foreach SRC, $(SRCS), $(CXX) $(CXXFLAGS) -MM -MT $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC)) $(SRC) >> $(OBJDIR)/.depend ;)
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(OBJDIR)/.depend
@@ -52,4 +52,4 @@ $(OBJDIR):
 	@mkdir -p $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -DVAMPIRE -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<

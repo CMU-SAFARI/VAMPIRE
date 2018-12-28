@@ -336,6 +336,8 @@ int Vampire::set_values(){
 /* Function to find and add energy consumed by a request. Returns 0 if sucessful.
    Else returns -1*/
 int Vampire::service_request(int encoded, Command cmd) {
+    msg::error(cmd.finishTime == 0, "Finish time is 0.");
+
     uint32_t fourbytes;
 
     Helper::verify_add(cmd.type, cmd.add, *configs);
@@ -610,10 +612,13 @@ int Vampire::estimate(){
     while (parseSuccessful || pendingQueue.size() > 0){
         // Check if the first pending command is ready to be serviced
         if (pendingQueue.size() > 0 ) {
-            if (!(parseSuccessful && pendingQueue.front().issueTime > cmd.issueTime)) {
+            if (!(parseSuccessful) || (pendingQueue.front().issueTime <= cmd.issueTime)) {
                 auto &pendingCmd = pendingQueue.front();
                 pendingQueue.pop();
+                std::cout << std::endl << std::endl << std::endl << "Command issue time" << pendingCmd.issueTime << std::endl;
+                pendingCmd.finishTime = pendingCmd.issueTime + dramSpec->cmdLengthInCycles(pendingCmd.type);
                 service_request(0, pendingCmd);
+                lastPendingCommandIssued = pendingCmd;
             }
             dbgstream << ", pending queue size: " << pendingQueue.size();
         }
@@ -624,20 +629,21 @@ int Vampire::estimate(){
 
             // Convert auto pre-charge commands to their open page counterparts and add the pre-charge to the pending queue
             if (cmd.type == CommandType::RDA) {
+                auto pendingCmdIssueTime = cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::RD);
+                dbgstream << "pending cmd a: " << pendingCmdIssueTime << std::endl;
                 pendingQueue.push(Command(CommandType::PRE, cmd.add,
-                                          cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::PRE), cmd.finishTime,
+                                          pendingCmdIssueTime, 0,
                                           cmd.data));
                 cmd.type = CommandType::RD;
             } else if (cmd.type == CommandType::WRA) {
+                auto pendingCmdIssueTime = cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::WR);
                 pendingQueue.push(Command(CommandType::PRE, cmd.add,
-                                          cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::PRE), cmd.finishTime,
+                                          pendingCmdIssueTime, 0,
                                           cmd.data));
                 cmd.type = CommandType::WR;
             }
 
-            cmd.finishTime = cmd.issueTime
-                             + static_cast<uint64_t >(
-                                     std::round(dramSpec->getCmdLength()[int(cmd.type)]*dramSpec->memClkSpeed*0.001));
+            cmd.finishTime = cmd.issueTime + dramSpec->cmdLengthInCycles(cmd.type);
 
             dbgstream << cmd << ", length: " << dramSpec->cmdLengthInCycles(cmd.type) << std::endl;
 
@@ -649,10 +655,14 @@ int Vampire::estimate(){
         }
     }
 
-    dbgstream << "Last issued command: ";
-    dbgstream << lastCommandIssued << std::endl;
+    dbgstream << "Last issued command: " << lastCommandIssued
+              << "lastStandbyEnergyEvalTime: " << lastStandbyEnergyEvalTime
+              << std::endl;
 
-    if (lastStandbyEnergyEvalTime < lastCommandIssued.finishTime) {
+    // Choose the finish time among last cmd and last pending to decide standby evaluation time
+    uint64_t lastCmdFinishTime = std::max(lastCommandIssued.finishTime, lastPendingCommandIssued.finishTime);
+
+    if (lastStandbyEnergyEvalTime < lastCmdFinishTime) {
 
         auto &cmdLength             =  dramSpec->getCmdLength();
         auto &cmdCurrent            =  dramSpec->getCmdCurrent();
@@ -673,7 +683,7 @@ int Vampire::estimate(){
         bool allBankPrecharged = true;
 
         // Check DRAM's state for bg energy calculation
-        auto timeDiff = lastCommandIssued.finishTime - lastStandbyEnergyEvalTime;
+        auto timeDiff = lastCmdFinishTime - lastStandbyEnergyEvalTime;
         for (uint64_t i = 0; i < dramStruct->banks->size(); i++) {
             auto &bank = dramStruct->banks->operator[](i);
             auto &bankState = dramStruct->bankStates->operator[](i);

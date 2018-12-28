@@ -61,6 +61,8 @@ public:
     Statistics *statistics;
     Equations *equations;
     Command lastCommandIssued;
+    Command lastPendingCommandIssued;
+
     uint64_t lastStandbyEnergyEvalTime = 0ul; // Keeps track of the time when the last standby time evaluation took place
 protected:
     /* Constants */
