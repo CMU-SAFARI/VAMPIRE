@@ -87,7 +87,6 @@ void Vampire::init_lambdas(){
                 }
             }
         }
-
     };
     init_structures[int(TraceType::RD_WR)] = [this] () -> void {
         return;
@@ -328,7 +327,7 @@ int Vampire::set_values(){
 
     /* Initialize all the statistics */
     statistics = new Statistics(configs->structCount, this->csvFilename);
-    equations = new Equations(*statistics, *dramSpec, *configs, vendorType, traceType, memory, structVar);
+    equations = new Equations(*statistics, *dramSpec, *configs, vendorType, traceType, &memory, structVar);
     dramStruct = new DramStruct();
     return 0;
 }

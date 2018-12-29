@@ -255,7 +255,7 @@ double_t Equations::calc_rd_wr_energy(CommandType request, MappedAdd add, unsign
     //keep data read from file instead of memory structure if traceType is RD_WR
     if (request == CommandType::RD && traceType == TraceType::WR){
         for (int fourbytes = 0; fourbytes < 16; fourbytes++){
-            data[fourbytes]  = memory[channel][rank][bank][row][col].data[fourbytes];
+            data[fourbytes]  = (*memory)[channel][rank][bank][row][col].data[fourbytes];
         }
     }
 
@@ -303,7 +303,7 @@ double_t Equations::struct_var_power_adjustment(CommandType request, MappedAdd a
 /* Class: Equations */
 /********************/
 Equations::Equations(Statistics &statistics, DramSpec &dramSpec, Config &configs, VendorType &vendorType,
-                     TraceType &tracetype, DRAMdata *****memory, StructVar structVar)
+                     TraceType &tracetype, DRAMdata ******memory, StructVar structVar)
         : statistics(statistics), dramSpec(dramSpec), configs(configs), vendorType(vendorType),
           traceType(tracetype), memory(memory), structVar(structVar){
     this->init_struct_var();

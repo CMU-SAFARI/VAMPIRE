@@ -9,7 +9,7 @@ OBJS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
 CXXFLAGS += -std=c++11
 
-.PHONY: all clean depend debug backend test
+.PHONY: all clean depend debug backend tests
 
 # all: Default compilation rule, generates binary with optimzation, not suitable for debugging
 all: CXXFLAGS += -O3 -march=native
@@ -20,8 +20,8 @@ debug: CXXFLAGS += -O0 -g -D GLOBAL_DEBUG
 debug: backend
 
 # Runs tests from `tests/`
-test:
-	./tests/functionaltests.py
+tests:
+	./tests/run_tests.sh
 
 # Actual compilation is handled by function past this comment
 backend: depend vampire sampletr

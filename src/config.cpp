@@ -65,8 +65,7 @@ void Config::parse(const std::string& fname) {
         if (tokens[0][0] == '#')
             continue;
 
-        // TODO: Check this lines need
-        //options[tokens[0]] = tokens[1];
+        options[tokens[0]] = tokens[1];
 
         // Command line overridable options
         if (tokens[0] == VENDOR_STR) {

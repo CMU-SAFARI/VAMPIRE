@@ -297,6 +297,14 @@ bool AsciiParser::parse(bool &wasDataRead, Command &cmd) {
             }
         }
     }
+
+    msg::error(cmd.type == CommandType::PRE &&  tokens.size() != 3,
+               "PRE command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+    msg::error((cmd.type == CommandType::RD || cmd.type == CommandType::RDA || cmd.type == CommandType::WR || cmd.type == CommandType::WRA) &&  tokens.size() < 4,
+               "I/O command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+    msg::error(cmd.type == CommandType::ACT &&  tokens.size() != 4,
+               "ACT command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+
     verify_cmd(cmd.add, cmd.type);
 
     dbgstream << line << std::endl;
