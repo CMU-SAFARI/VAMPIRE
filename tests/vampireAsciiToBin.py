@@ -1,6 +1,14 @@
 #! /usr/bin/env python2
 
-# Converts VAMPIRE's ASCII trace to binary trace format
+# vampireAsciiToBin.py
+
+# VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+# https://github.com/CMU-SAFARI/VAMPIRE
+
+# Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zurich
+# Released under the MIT License
+
+# Description: Converts VAMPIRE's ASCII trace to binary trace format
 
 import sys
 import struct

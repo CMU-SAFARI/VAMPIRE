@@ -20,7 +20,7 @@ debug: CXXFLAGS += -O0 -g -D GLOBAL_DEBUG
 debug: backend
 
 # Runs tests from `tests/`
-tests:
+tests: all
 	./tests/run_tests.sh
 
 # Actual compilation is handled by function past this comment

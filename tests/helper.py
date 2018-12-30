@@ -1,3 +1,11 @@
+# helper.py
+
+# VAMPIRE: Variation-Aware model of Memory Power Informed by Real Experiments
+# https://github.com/CMU-SAFARI/VAMPIRE
+
+# Copyright (c) SAFARI Research Group at Carnegie Mellon University and ETH Zurich
+# Released under the MIT License
+
 import os.path
 import subprocess
 import csv
