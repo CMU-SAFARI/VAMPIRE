@@ -42,6 +42,7 @@ VAMPIRE includes some inbuilt test to verify functional correctness, however, pl
 make tests
 ```
 
+On a successful run `make` will exit will code 0
 ### Generating an Input Trace File
 
 VAMPIRE requires an input file that contains a trace (i.e., list) of DDR3 DRAM commands.  This can take one of two formats:

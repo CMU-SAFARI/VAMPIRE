@@ -18,7 +18,7 @@ def exec_shell(cmd, get_output=False, stdout="/dev/null"):
         return (returncode, "")
 
 
-def vampire(trace_f, config="", vendor="A", csv_f="", data_model="RD_WR", parser="ASCII"):
+def vampire(trace_f, config="", vendor="A", csv_f="", data_model="RD_WR", parser="ASCII", dramSpec=None):
     if config == "":
         config = VAMPIRE_CFG
 
@@ -28,6 +28,9 @@ def vampire(trace_f, config="", vendor="A", csv_f="", data_model="RD_WR", parser
     else:
         vampire_cmd = "%s -f %s -c %s -v %s -csv %s -d %s -p %s" \
                       % (VAMPIRE_PATH, trace_f, config, vendor, csv_f, data_model, parser)
+
+    if not dramSpec == None:
+        vampire_cmd += " -dramSpec %s" % dramSpec
     exec_shell(vampire_cmd)
 
 def convert_trace(in_f, out_f, data_model):
@@ -44,10 +47,10 @@ def setup():
     VAMPIRE_PATH = VAMPIRE_DIR + "/vampire"
     
     if not os.path.isfile(VAMPIRE_PATH):
-        print "Unable to find vamire binary at %s, exiting..." % VAMPIRE_PATH
+        print "Unable to find VAMPIRE binary at %s, exiting..." % VAMPIRE_PATH
         exit(1)
 
-
+# Raises exception if every csv in the csv_arr is not identical to others else returns True
 def compare_csv(csv_arr):
     first_csv = csv_arr[1]
     first_csv_rows = [row for row in first_csv]
@@ -58,7 +61,7 @@ def compare_csv(csv_arr):
             if not first_csv_rows[row_iter] == row:
                 raise ValueError("CSV match failed")
             row_iter += 1
-
+    return True
 
 def check_for_nan(csv_arr):
     for csv in csv_arr:
