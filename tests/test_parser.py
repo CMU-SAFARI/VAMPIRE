@@ -81,8 +81,8 @@ def test_parser_vendor(vendor="A"):
             pass_count += 1
 
     print ""
-    print "[test_autoprecharge]: %d test completed, %d%% passed" % (
-    len(tests_status), pass_count / len(tests_status) * 100)
+    print "[test_parser]: %d test completed, %d%% passed" \
+          % (len(tests_status), pass_count / len(tests_status) * 100)
 
     if (pass_count == len(tests_status)):
         return (0, len(tests_status), pass_count)
@@ -92,7 +92,10 @@ def test_parser_vendor(vendor="A"):
 
 def main():
     hp.setup()
-    (result, _, _) = test_parser_vendor()
+    VENDORS = ["A", "B", "C"]
+    for vendor in VENDORS:
+        print "Test for vendor %s" % vendor
+        (result, _, _) = test_parser_vendor(vendor=vendor)
     return result
 
 

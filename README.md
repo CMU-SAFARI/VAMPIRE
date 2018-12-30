@@ -7,7 +7,7 @@ and is compatible with widely-used memory simulators such as
 [Ramulator](https://github.com/CMU-SAFARI/ramulator/) and
 [DRAMSim2](https://github.com/umd-memsys/DRAMSim2/).
 
-*Current version: 1.1.0 (released November 28, 2018)*
+*Current version: 1.1.0 (released December 30, 2018)*
 
 
 ## Key Features
@@ -15,7 +15,7 @@ and is compatible with widely-used memory simulators such as
 VAMPIRE includes the following major features that are not included in prior DRAM power modeling tools:
 
 - typical-case power consumption values (as opposed to worst-case power consumption)
-- data-depedent power consumption behavior
+- data-dependent power consumption behavior
 - the impact structural variation within a module on power consumption
 - power consumption models based on extensive data collected from DRAM modules by three major vendors
 
@@ -37,9 +37,9 @@ make -j
 *Note: VAMPIRE currently requires a C++11 compiler (e.g., `clang++`, `g++-5`).*
 
 ### Running tests
-VAMPIRE includes some inbuilt test to verify functional correctness, however please note that these tests do not cover 100% of the functionalities.  
+VAMPIRE includes some inbuilt test to verify functional correctness, however, please note that these tests do not cover 100% of the functionalities.  
 ```shell
-make test
+make tests
 ```
 
 ### Generating an Input Trace File
@@ -52,7 +52,7 @@ VAMPIRE requires an input file that contains a trace (i.e., list) of DDR3 DRAM c
 #### Binary Trace Format
 
 ```
-<64-bit timestamp of current cycle><33 bits of zero padding><command type (3 bits)><channel ID (2 bits)><rank ID (2 bits)><bank ID (3 bits)><row ID (16 bits)><column number (7 bits)>[<64-byte data value; optional, for reads and writes only>]
+<64-bit timestamp of current cycle><31 bits of zero padding><command type (3 bits)><channel ID (2 bits)><rank ID (2 bits)><bank ID (3 bits)><row ID (16 bits)><column number (7 bits)>[<64-byte data value; optional, for reads and writes only>]
 ```
 
 Valid values for the command type (in binary) are:
@@ -66,8 +66,12 @@ Valid values for the command type (in binary) are:
 #### ASCII Trace Format
 
 ```
-<timestamp (i.e., current cycle)>,<command>,<bank>[,<data>]
+<timestamp (i.e., current cycle)>,<command>,<bank>[,row/col][,<data>]
 ```
+
+**NOTES:**  
+1. `ACT` commands require a row number while I/O commands (`RD`, `RDA`, `WR` and `WRA`) require a column number.
+1. Certain data dependency models require data for corresponding I/O command (e.g. for `WR` and `WRA` with WR data dependency model).
 
 #### Generating Random Binary Test Traces Using `traceGen`
 ```shell
@@ -79,7 +83,7 @@ This generates a number of trace files with 10000 random requests in each trace 
 ### Running VAMPIRE
 
 ```shell
-./vampire -f <file_name> -c <config_file> -d {MEAN|DIST|WR|RD_WR} -p {BINARY|ASCII} [-v {A|B|C)] [-s] [-dramSpec <dramspec_file>]
+./vampire -f <file_name> -c <config_file> -d {MEAN|DIST|WR|RD_WR} -p {BINARY|ASCII} [-v {A|B|C|Cust}] [-s] [-dramSpec <dramspec_file>]
 ```
 
 #### Required Command-Line Arguments
