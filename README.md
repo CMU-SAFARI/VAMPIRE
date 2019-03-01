@@ -7,7 +7,7 @@ and is compatible with widely-used memory simulators such as
 [Ramulator](https://github.com/CMU-SAFARI/ramulator/) and
 [DRAMSim2](https://github.com/umd-memsys/DRAMSim2/).
 
-*Current version: 1.1.0 (released December 30, 2018)*
+*Current version: 1.1.0 (released March 1, 2019)*
 
 
 ## Key Features
