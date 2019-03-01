@@ -24,7 +24,7 @@ For more information, please read our paper:
 >S. Ghose, A. G. Yağlıkçı, R. Gupta, D. Lee, K. Kudrolli, W. X. Liu, H. Hassan, K. K. Chang, N. Chatterjee, A. Agrawal, M. O'Connor, O. Mutlu.
 >"[**What Your DRAM Power Models Are Not Telling You: Lessons from a Detailed Experimental Study**](http://users.ece.cmu.edu/~saugatag/papers/18sigmetrics_vampire.pdf)".
 >In _Proceedings of the ACM International Conference on Measurement and Modeling of Computer Systems (SIGMETRICS)_, June 2018.
->To be published in _Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS)_, Vol. 2, No. 3, December 2018.
+>In _Proceedings of the ACM on Measurement and Analysis of Computing Systems (POMACS)_, Vol. 2, No. 3, December 2018.
 
 
 ## Using VAMPIRE
@@ -137,10 +137,9 @@ The following command uses the RD_WR data dependency model, a compatible RD_WR b
 ./vampire -f ./trace_rd_wr_t.bin -v B -c configs/default.cfg -d RD_WR
 ```
 
-### Piping commands to VAMPIRE
-VAMPIRE supports reading trace commands from pipe (`/dev/stdin`) instead of a trace file, allowing VAMPIRE to process the commands as they are fed. To read input from pipe use `/dev/stdin` as the input trace file (option `-f`) and pipe the commands to VAMPIRE binary.
+### Piping Commands to VAMPIRE
+VAMPIRE supports reading trace commands from a pipe (`/dev/stdin`) instead of a trace file, allowing VAMPIRE to process the commands as they are fed. To read input from a pipe, use `/dev/stdin` as the input trace file (option `-f`) and pipe the commands to VAMPIRE binary.
 
-e.g.  
 ```shell
 cat sample_vampire_trace.trace | ./vampire -f /dev/stdin [options]
 ```
@@ -162,5 +161,3 @@ Contributors include:
 - A. Giray Yağlıkçı
 
 VAMPIRE is released under the MIT License.
-
-
