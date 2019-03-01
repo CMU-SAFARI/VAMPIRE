@@ -29,6 +29,7 @@ Vampire::~Vampire() {
 
     delete traceFilename;
     delete configFilename;
+    delete dramSpecFilename;
 
     delete dramSpec;
     delete dramStruct;
@@ -86,7 +87,6 @@ void Vampire::init_lambdas(){
                 }
             }
         }
-
     };
     init_structures[int(TraceType::RD_WR)] = [this] () -> void {
         return;
@@ -268,16 +268,16 @@ void Vampire::init_lambdas(){
 }
 
 void Vampire::init_latencies() {
-    // RD, WR, ACT, PRE
-    latency[int(VendorType::A)]= (*new std::vector<float>{
+/*    // RD, WR, ACT, PRE
+    latency[int(VendorType::A)].assign({
             25.0, 25.0, 15.0, 15.0 //ns
     });
-    latency[int(VendorType::B)]= (*new std::vector<float>{
+    latency[int(VendorType::B)].assign({
             25.0, 25.0, 15.0, 15.0 //ns
     });
-    latency[int(VendorType::C)]= (*new std::vector<float>   {
+    latency[int(VendorType::C)].assign({
             23.125, 23.125, 13.125, 13.125 //ns
-    });
+    });*/
 }
 
 /* Intializes all the objects used in VAMPIRE class. Called after parsing config file and command line parameters */
@@ -317,11 +317,17 @@ int Vampire::set_values(){
             dramSpec = new DramSpec_C();
             break;
         }
+        case (int(VendorType::Cust)) : {
+            if (dramSpecFilename == nullptr) {
+                msg::error("No dramSpec file specified with Cust Vender, see vampire --help for more details.");
+            }
+            dramSpec = new DramSpec_Cust(*dramSpecFilename);
+        }
     }
 
     /* Initialize all the statistics */
-    statistics = new Statistics(configs->structCount);
-    equations = new Equations(*statistics, *dramSpec, *configs, vendorType, traceType, memory, structVar);
+    statistics = new Statistics(configs->structCount, this->csvFilename);
+    equations = new Equations(*statistics, *dramSpec, *configs, vendorType, traceType, &memory, structVar);
     dramStruct = new DramStruct();
     return 0;
 }
@@ -329,6 +335,8 @@ int Vampire::set_values(){
 /* Function to find and add energy consumed by a request. Returns 0 if sucessful.
    Else returns -1*/
 int Vampire::service_request(int encoded, Command cmd) {
+    msg::error(cmd.finishTime == 0, "Finish time is 0.");
+
     uint32_t fourbytes;
 
     Helper::verify_add(cmd.type, cmd.add, *configs);
@@ -369,11 +377,10 @@ int Vampire::service_request(int encoded, Command cmd) {
             allBankPrecharged = false;
     }
 
-#ifdef DEBUG
-    std::cout
+    dbgstream
             << "currentTime: " << currentTime
             << ", timeDiff: " << timeDiff << std::endl;
-#endif
+
     if (allBankPrecharged) {
         totalPrechargeEnergy += timeDiff*dramSpec->preStandbyEnergy;
         totalPreStandbyCycles += timeDiff;
@@ -384,7 +391,7 @@ int Vampire::service_request(int encoded, Command cmd) {
 
     this->lastStandbyEnergyEvalTime = this->currentTime;
 
-#ifdef DEBUG
+#ifdef GLOBAL_DEBUG
     std::stringstream ss;
     ss << "Request: " << commandString[int(cmd.type)] << " issueTime: " << cmd.issueTime <<  " Bank: " << cmd.add.bank << " Row: " << cmd.add.row << " Col: " << cmd.add.col;
     msg::info(ss.str());
@@ -414,15 +421,14 @@ int Vampire::service_request(int encoded, Command cmd) {
                     encodingType
             ) - dramSpec->actStandbyEnergy * dramSpec->cmdLengthInCycles(CommandType::RD);
 
-#ifdef DEBUG
-            std::cout
+            dbgstream
                     << ", cmdLengthInCycles: " << dramSpec->cmdLengthInCycles(CommandType::RD)
                     << ", cmdRdEnergy: " << equations->calc_rd_wr_energy(CommandType::RD, cmd.add, cmd.data, numOfSetBits, numOfToggleBits, IO_buffer, encodingType)
                     << ", cmdRdEnergy - bgEnergy" << cmdRdEnergy
                     << ", RDCmdLength: " << dramSpec->cmdLengthInCycles(CommandType::RD)
                     << ", cmdLength: " << cmdLength[static_cast<uint64_t>(CommandType::RD)]
                     << ", memClkSpeed: " << dramSpec->memClkSpeed;
-#endif
+
 
             cmdRdEnergy /= 2; // Current model uses the standard IDD4 loops which have RD/WR energies of two command
             if (structVar == StructVar::YES)
@@ -538,9 +544,7 @@ int Vampire::service_request(int encoded, Command cmd) {
     /* Update relevant stats */
     statistics->cmdCycles->operator[]((uint64_t)(cmd.type)) += cmdLengthInCycles(cmd.type);
 
-#ifdef DEBUG
-    std::cout << ", cmdLengthInCycles: " << cmdLengthInCycles(cmd.type);
-#endif
+    dbgstream << ", cmdLengthInCycles: " << cmdLengthInCycles(cmd.type);
     return 0;
 }
 
@@ -548,13 +552,11 @@ int Vampire::service_request(int encoded, Command cmd) {
 void Vampire::apply_encoding(CommandType &req, unsigned int *data, int &encoding) {
     encoding = 0;
 
-#ifdef DEBUG
-    std::cout << "before data: 0x";
+    dbgstream << "before data: 0x";
     for (int i = 0; i < 16; i++) {
-        std::cout << std::hex << data[i] << std::dec;
+        dbgstream << std::hex << data[i] << std::dec;
     }
-    std::cout << std::endl;
-#endif
+    dbgstream << std::endl;
 
     switch (int(traceType)) {
         case (int(TraceType::RD_WR)):
@@ -580,13 +582,12 @@ void Vampire::apply_encoding(CommandType &req, unsigned int *data, int &encoding
         default:
             msg::error(false, "Undefined Vampire::TraceType");
     }
-#ifdef DEBUG
-    std::cout << "after data: 0x";
+
+    dbgstream << "after data: 0x";
     for (int i = 0; i < 16; i++) {
-        std::cout << std::hex << data[i] << std::dec;
+        dbgstream << std::hex << data[i] << std::dec;
     }
-    std::cout << std::endl;
-#endif
+    dbgstream << std::endl;
 }
 
 /* Update the stats for the given command's type if the cond is true */
@@ -610,14 +611,15 @@ int Vampire::estimate(){
     while (parseSuccessful || pendingQueue.size() > 0){
         // Check if the first pending command is ready to be serviced
         if (pendingQueue.size() > 0 ) {
-            if (!(parseSuccessful && pendingQueue.front().issueTime > cmd.issueTime)) {
+            if (!(parseSuccessful) || (pendingQueue.front().issueTime <= cmd.issueTime)) {
                 auto &pendingCmd = pendingQueue.front();
                 pendingQueue.pop();
+                std::cout << std::endl << std::endl << std::endl << "Command issue time" << pendingCmd.issueTime << std::endl;
+                pendingCmd.finishTime = pendingCmd.issueTime + dramSpec->cmdLengthInCycles(pendingCmd.type);
                 service_request(0, pendingCmd);
+                lastPendingCommandIssued = pendingCmd;
             }
-#ifdef DEBUG
-            std::cout << ", pending queue size: " << pendingQueue.size();
-#endif
+            dbgstream << ", pending queue size: " << pendingQueue.size();
         }
 
         if (parseSuccessful) {
@@ -626,24 +628,24 @@ int Vampire::estimate(){
 
             // Convert auto pre-charge commands to their open page counterparts and add the pre-charge to the pending queue
             if (cmd.type == CommandType::RDA) {
+                auto pendingCmdIssueTime = cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::RD);
+                dbgstream << "pending cmd a: " << pendingCmdIssueTime << std::endl;
                 pendingQueue.push(Command(CommandType::PRE, cmd.add,
-                                          cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::PRE), cmd.finishTime,
+                                          pendingCmdIssueTime, 0,
                                           cmd.data));
                 cmd.type = CommandType::RD;
             } else if (cmd.type == CommandType::WRA) {
+                auto pendingCmdIssueTime = cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::WR);
                 pendingQueue.push(Command(CommandType::PRE, cmd.add,
-                                          cmd.issueTime + dramSpec->cmdLengthInCycles(CommandType::PRE), cmd.finishTime,
+                                          pendingCmdIssueTime, 0,
                                           cmd.data));
                 cmd.type = CommandType::WR;
             }
 
-            cmd.finishTime = cmd.issueTime
-                             + static_cast<uint64_t >(
-                                     std::round(dramSpec->getCmdLength()[int(cmd.type)]*dramSpec->memClkSpeed*0.001));
+            cmd.finishTime = cmd.issueTime + dramSpec->cmdLengthInCycles(cmd.type);
 
-#ifdef DEBUG
-            std::cout << cmd << ", length: " << dramSpec->cmdLengthInCycles(cmd.type) << std::endl;
-#endif
+            dbgstream << cmd << ", length: " << dramSpec->cmdLengthInCycles(cmd.type) << std::endl;
+
             service_request(0, cmd);
             cmd.add.reset();
             parseSuccessful = parser->parse(wasDataRead, cmd);
@@ -652,12 +654,14 @@ int Vampire::estimate(){
         }
     }
 
-#ifdef DEBUG
-    std::cout << "Last issued command: ";
-    std::cout << lastCommandIssued << std::endl;
-#endif
+    dbgstream << "Last issued command: " << lastCommandIssued
+              << "lastStandbyEnergyEvalTime: " << lastStandbyEnergyEvalTime
+              << std::endl;
 
-    if (lastStandbyEnergyEvalTime < lastCommandIssued.finishTime) {
+    // Choose the finish time among last cmd and last pending to decide standby evaluation time
+    uint64_t lastCmdFinishTime = std::max(lastCommandIssued.finishTime, lastPendingCommandIssued.finishTime);
+
+    if (lastStandbyEnergyEvalTime < lastCmdFinishTime) {
 
         auto &cmdLength             =  dramSpec->getCmdLength();
         auto &cmdCurrent            =  dramSpec->getCmdCurrent();
@@ -678,7 +682,7 @@ int Vampire::estimate(){
         bool allBankPrecharged = true;
 
         // Check DRAM's state for bg energy calculation
-        auto timeDiff = lastCommandIssued.finishTime - lastStandbyEnergyEvalTime;
+        auto timeDiff = lastCmdFinishTime - lastStandbyEnergyEvalTime;
         for (uint64_t i = 0; i < dramStruct->banks->size(); i++) {
             auto &bank = dramStruct->banks->operator[](i);
             auto &bankState = dramStruct->bankStates->operator[](i);
@@ -687,10 +691,8 @@ int Vampire::estimate(){
                 allBankPrecharged = false;
         }
 
-#ifdef DEBUG
-        std::cout << "currentTime: " << currentTime << std::endl;
-        std::cout << "timeDiff: " << timeDiff << std::endl;
-#endif
+        dbgstream << "currentTime: " << currentTime << std::endl;
+        dbgstream << "timeDiff: " << timeDiff << std::endl;
 
         // Add corresponding background energy to the stats
         if (allBankPrecharged) {
@@ -711,6 +713,11 @@ int Vampire::estimate(){
     statistics->calculateTotal(*dramSpec, lastCmdEndTime);
 
     statistics->print_stats();
+
+    if (this->csvFilename != nullptr) {
+        statistics->write_csv(csvFilename);
+    }
+
     return 0;
 }
 

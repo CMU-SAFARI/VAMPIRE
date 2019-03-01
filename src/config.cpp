@@ -35,8 +35,12 @@ void Config::parse(const std::string& fname) {
 
     std::string line;
     while (getline(file, line)) {
+        std::string origLine = line; // Store the orginal line for warning msg
+
         char delim[] = " \t=";
         std::vector<std::string> tokens;
+
+        bool lineParsed = false; // Identifies lines with unknown keys
 
         while (true) {
             size_t start = line.find_first_not_of(delim);
@@ -54,7 +58,7 @@ void Config::parse(const std::string& fname) {
         }
 
         // empty line
-        if (!tokens.size())
+        if (tokens.empty())
             continue;
 
         // comment line
@@ -66,22 +70,30 @@ void Config::parse(const std::string& fname) {
         // Command line overridable options
         if (tokens[0] == VENDOR_STR) {
             vendor = atoi(tokens[1].c_str());
+            lineParsed = true;
         } else if (tokens[0] == TRACE_TYPE_STR) {
+            lineParsed = true;
             traceType = atoi(tokens[1].c_str());
         } else if (tokens[0] == ENCODING_TYPE_STR) {
+            lineParsed = true;
             encodingType = atoi(tokens[1].c_str());
         }
 
         // For structural configuration
         if (tokens[0] == NUM_CHAN_S) {
+            lineParsed = true;
             structCount[int(Level::CHANNEL)] = std::stoul(tokens[1].c_str());
         } else if (tokens[0] == NUM_RANKS_S) {
+            lineParsed = true;
             structCount[int(Level::RANK)]    = std::stoul(tokens[1].c_str());
         } else if (tokens[0] == NUM_BANKS_S) {
+            lineParsed = true;
             structCount[int(Level::BANK)]    = std::stoul(tokens[1].c_str());
         } else if (tokens[0] == NUM_ROWS_S) {
+            lineParsed = true;
             structCount[int(Level::ROW)]     = std::stoul(tokens[1].c_str());
         } else if (tokens[0] == NUM_COLS_S) {
+            lineParsed = true;
             structCount[int(Level::COLUMN)]  = std::stoul(tokens[1].c_str());
         }
 
@@ -95,6 +107,7 @@ void Config::parse(const std::string& fname) {
             {
                 return std::stof(val);
             });
+            lineParsed = true;
         } else if (tokens[0] == DIST_TOG_S) {
             // Convert std::vector<std::string> to std::vector<float>
             assert(tokens.size() == (NUM_OF_BITS+1+1) && "Distribution should have exactly 513 values.");
@@ -104,17 +117,26 @@ void Config::parse(const std::string& fname) {
             {
                 return std::stof(val);
             });
+            lineParsed = true;
         } else if (tokens[0] == DIST_SET_MULT_S) {
             setBitArrSizeMult = atoi(tokens[1].c_str());
+            lineParsed = true;
         } else if (tokens[0] == DIST_TOG_MULT_S) {
             toggleArrSizeMult = atoi(tokens[1].c_str());
+            lineParsed = true;
         }
 
         // For TraceType::RATIO
         if (tokens[0] == AVG_SET_BITS_S) {
             avgNumSetBits = atoi(tokens[1].c_str());
+            lineParsed = true;
         } else if (tokens[0] == AVG_TOGGLE_BITS_S) {
             avgNumToggleBits = atoi(tokens[1].c_str());
+            lineParsed = true;
+        }
+
+        if (!lineParsed) {
+            msg::warning("Config: Line `" + origLine + "' contains unknown key, please refer to configs/default.cfg for all valid options.");
         }
     }
     file.close();

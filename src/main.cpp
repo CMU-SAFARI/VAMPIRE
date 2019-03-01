@@ -25,16 +25,20 @@ T get_param(const std::string *refEnumArr, const std::string paramStr, std::stri
 void print_help() {
     const char *helpText =
             "usage:\n"
-            "   vampire -f <trace_file_name> -c <config_file> -d {RD_WR|WR|MEAN|DIST} -p {BINARY|ASCII} [-v {A|B|C}] [-s]\n"
+            "   vampire -f <trace_file_name> -c <config_file> -d {RD_WR|WR|MEAN|DIST} -p {BINARY|ASCII} [-v {A|B|C|Cust}] [-dramSpec <dramSpec_file>] [-s]\n"
             "\n"
             "options: \n"
             "   -f <trace_file_name>                Trace file to parse\n"
             "   -c <config_file>                    Config file\n"
             "   -d {MEAN|DIST|RD_WR|WR}             Data dependency model\n"
             "   -p {BINARY|ASCII}                   Specifies parser to be used (Note: Current traceGen only generates binary traces)\n"
-            "   -v {A|B|C}                          Specifies vendor for calculations, default: A\n"
+            "   -v {A|B|C|Cust}                     Specifies vendor for calculations, default: A. Cust vendor requires an additional dramspec file, specified using -dramSpec option.\n"
+            "   -dramSpec <dramspec_file>           Specifies DRAM specifications for calculations, required for Cust vendor type\n"
             // "   -e {BDI|CUSTOM|CUSTOM_MAX|NONE}     Specifies encoding, default: NONE\n"
-            "   -s                                  Enables structural variations\n";
+            "   -s                                  Enables structural variations\n"
+            "   -csv <csv_filename>                 Specifies filename for VAMPIRE to write stats as csv to. If the file exists, it is overwritten else a new file is\n"
+            "                                       created.\n";
+
     std::cout << helpText;
 }
 
@@ -92,6 +96,18 @@ void parse_args(int argc, char *argv[], Vampire &dram) {
             msg::error(argc <= i+1, "Option '-p': Parser type not specified.");
             msg::info("Using parserType: " + std::string(argv[i+1]));
             dram.parserType = get_param<ParserType>(parserTypeString, argv[i + 1], "ParserType");
+        }
+
+        if (strcmp(argv[i], "-dramSpec") == 0) {
+            msg::error(argc <= i+1, "Option '-dramSpec': DramSpec file not specified.");
+            msg::info("dramSpec file: " + std::string(argv[i+1]));
+            dram.dramSpecFilename = new std::string(argv[i+1]);
+        }
+
+        if (strcmp(argv[i], "-csv") == 0) {
+            msg::error(argc <= i+1, "Option '-csv': csv ouput filename not specified.");
+            msg::info("Output csv file: " + std::string(argv[i+1]));
+            dram.csvFilename = new std::string(argv[i+1]);
         }
     }
 }

@@ -87,9 +87,7 @@ void BinParser::parse_data(uint32_t data[16]) {
  */
 
 bool BinParser::parse(bool &wasDataRead, Command &cmd) {
-#ifdef DEBUG
-    std::cout << ", tellg: " << file->tellg();
-#endif
+    dbgstream << ", tellg: " << file->tellg();
 
     // Return false if file is completely read
     if (file->tellg() == fileSize)
@@ -159,7 +157,7 @@ bool BinParser::parse(bool &wasDataRead, Command &cmd) {
     bool isWriteCmd = cmd.type == CommandType::WR;
 
     if ((isWriteCmd && traceType == TraceType::WR) || (isIOCmd && traceType == TraceType::RD_WR)){ /* Also get the data to be written */
-        auto *data_c = new char[sizeof(uint32_t) * 16]; // 64 bytes
+        char data_c[sizeof(uint32_t) * 16]; // 64 bytes
         file->read(data_c, sizeof(uint32_t)*16);
         auto data = (uint32_t*)data_c;
 
@@ -167,19 +165,21 @@ bool BinParser::parse(bool &wasDataRead, Command &cmd) {
             cmd.data[i] = data[i];
         }
 
-#ifdef DEBUG
-        std::cout << std::endl << "dataread: " << std::hex;
+        dbgstream << std::endl << "dataread: " << std::hex;
         for (int i = 0; i < 16; i++) {
-            std::cout << data[i];
+            dbgstream << data[i];
         }
-        std::cout << std::dec << std::endl;
-#endif
+        dbgstream << std::dec << std::endl;
 
         wasDataRead = true;
 
     } else {
         wasDataRead = false;
     }
+
+    delete[] bytes_read_c;
+    delete[] time_a;
+    delete time;
     return true;
 }
 
@@ -276,7 +276,9 @@ bool AsciiParser::parse(bool &wasDataRead, Command &cmd) {
                     // Reads data in hexadecimal without the '0x' or any other suffix
                     // Error if data string is not of length
                     //   burstLength*sizeof(unsigned int)*(number of hex bits in a byte)
-                    msg::error(token.length() != 8 * sizeof(unsigned long) * 2, "Malformed data supplied");
+                    msg::error(token.length() != 8 * sizeof(unsigned long) * 2,
+                               "Data size for command at time `" + std::to_string(cmd.issueTime) +
+                               "' is not of length " + std::to_string(8 * sizeof(unsigned long) * 2));
 
                     // Extract the data from the string in chunks of 32 bits
                     for (int dataElementCount = 0; dataElementCount < 16; dataElementCount++) {
@@ -295,11 +297,19 @@ bool AsciiParser::parse(bool &wasDataRead, Command &cmd) {
             }
         }
     }
+
+    msg::error(cmd.type == CommandType::PRE &&  tokens.size() != 3,
+               "PRE command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+    msg::error((cmd.type == CommandType::RD || cmd.type == CommandType::RDA || cmd.type == CommandType::WR || cmd.type == CommandType::WRA) &&  tokens.size() < 4,
+               "I/O command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+    msg::error(cmd.type == CommandType::ACT &&  tokens.size() != 4,
+               "ACT command at time: " + std::to_string(cmd.issueTime) + " doesn't have enough parameters.");
+
     verify_cmd(cmd.add, cmd.type);
-#ifdef DEBUG
-    std::cout << line << std::endl;
-    std::cout << "result:: " << result << std::endl;
-#endif
+
+    dbgstream << line << std::endl;
+    dbgstream << "result:: " << result << std::endl;
+
     return result;
 }
 

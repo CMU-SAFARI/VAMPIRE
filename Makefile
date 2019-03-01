@@ -9,15 +9,19 @@ OBJS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 
 CXXFLAGS += -std=c++11
 
-.PHONY: all clean depend debug backend
+.PHONY: all clean depend debug backend tests
 
 # all: Default compilation rule, generates binary with optimzation, not suitable for debugging
 all: CXXFLAGS += -O3 -march=native
 all: backend
 
 # debug: Generates a binary which is easier to debug
-debug: CXXFLAGS += -O0 -g
+debug: CXXFLAGS += -O0 -g -D GLOBAL_DEBUG
 debug: backend
+
+# Runs tests from `tests/`
+tests: all
+	./tests/run_tests.sh
 
 # Actual compilation is handled by function past this comment
 backend: depend vampire sampletr
@@ -36,7 +40,7 @@ depend: $(OBJDIR)/.depend
 $(OBJDIR)/.depend: $(SRCS)
 	@mkdir -p $(OBJDIR)
 	@rm -f $(OBJDIR)/.depend
-	@$(foreach SRC, $(SRCS), $(CXX) $(CXXFLAGS) -DVAMPIRE -MM -MT $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC)) $(SRC) >> $(OBJDIR)/.depend ;)
+	@$(foreach SRC, $(SRCS), $(CXX) $(CXXFLAGS) -MM -MT $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC)) $(SRC) >> $(OBJDIR)/.depend ;)
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(OBJDIR)/.depend
@@ -52,4 +56,4 @@ $(OBJDIR):
 	@mkdir -p $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -DVAMPIRE -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
