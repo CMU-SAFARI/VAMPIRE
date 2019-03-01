@@ -33,6 +33,7 @@ Released under the MIT License
 #include "parser.h"
 #include "statistics.h"
 #include "command.h"
+#include "globalDebug.h"
 
 class Vampire {
 
@@ -49,6 +50,9 @@ public:
     std::string *traceFilename = nullptr;
     std::string *configFilename = nullptr;
 
+    std::string *dramSpecFilename = nullptr;
+    std::string *csvFilename = nullptr;
+
     Config *configs;
     Parser *parser;
     DramSpec *dramSpec = nullptr;
@@ -57,6 +61,8 @@ public:
     Statistics *statistics;
     Equations *equations;
     Command lastCommandIssued;
+    Command lastPendingCommandIssued;
+
     uint64_t lastStandbyEnergyEvalTime = 0ul; // Keeps track of the time when the last standby time evaluation took place
 protected:
     /* Constants */
@@ -73,7 +79,7 @@ protected:
     void init_latencies();
 
     /* Stores latency of each operation */
-    std::vector<float> latency[int(VendorType::MAX)];
+    //std::vector<float> latency[int(VendorType::MAX)];
 
     /* Calculates # of set bits in data */
     std::function<unsigned int(unsigned int[16])> getSetBits[int(TraceType::MAX)];

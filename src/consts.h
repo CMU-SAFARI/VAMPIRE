@@ -39,7 +39,8 @@ static const int BURST_LENGTH = 8; // TODO: make more generalized and read from 
 /* Macros */
 #define FUNCTION_STR std::string(__FUNCTION__)
 #define FILE_STR     std::string(__FILE__)
-#define LINE_STR     std::string(__LINE__)
+#define LINE_STR     std::to_string(__LINE__)
+#define DBG_STR      std::string(FILE_STR + ":" + LINE_STR + "::" + FUNCTION_STR)
 
 /***********************************/
 /* Enums for handling *everything* */
@@ -53,8 +54,9 @@ enum class CommandType   {
     MAX
 };
 
+// NOTE: On updating any one of the following enums, update their corresponding string array
 enum class EncodingType     {NONE, BDI, CUSTOM, CUSTOM_ADV, MAX};
-enum class VendorType       {A, B, C, MAX};
+enum class VendorType       {A, B, C, Cust, MAX};
 enum class StructVar        {NO, YES, MAX};
 enum class TraceType        {MEAN, DIST, WR, RD_WR, MAX};
 enum class Level            {CHANNEL, RANK, BANK, ROW, COLUMN, MAX};
@@ -70,7 +72,7 @@ const std::string commandString[int(CommandType::MAX)] = {
         "SREN", "SREX"
 };
 const std::string encodingString[]      = {"NONE", "BDI", "CUSTOM", "CUSTOM_ADV"};
-const std::string vendorString[]        = {"A", "B", "C"};
+const std::string vendorString[]        = {"A", "B", "C", "Cust"};
 const std::string structVarString[]     = {"NO", "YES"};
 const std::string traceTypeString[]     = {"MEAN", "DIST", "WR", "RD_WR"};
 const std::string parserTypeString[]    = {"BINARY", "ASCII"};

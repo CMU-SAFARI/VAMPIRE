@@ -1,6 +1,17 @@
+cmake-build-debug
+CMakeLists.txt
 *.bin
 vampire
 traceGen
 dramEnergy
 obj/*
 .idea/
+*.key
+
+# Emacs 
+*~
+.#*
+\#*
+
+# Python
+*.pyc

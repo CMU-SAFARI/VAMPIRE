@@ -20,7 +20,7 @@ Released under the MIT License
 /* Constructor */
 template<typename T>
 ScalarStat<T>::ScalarStat(T value, std::string name, std::string unit, std::string description)
-        :value(value), name(name), unit(unit), description(description) {}
+        : value(value), name(name), unit(unit), description(description) {}
 
 
 template <typename T>
@@ -34,6 +34,17 @@ std::string ScalarStat<T>::toString() const {
     ss << std::endl;
     return ss.str();
 };
+
+/* Generates a string representation of the object for writing to a csv file */
+template<typename T>
+std::string ScalarStat<T>::toCsvString() const {
+    std::stringstream ss;
+    ss << this->name << ","
+       << this->value << ","
+       << this->unit << ","
+       << this->description << std::endl;
+    return ss.str();
+}
 
 /* Getters and setters */
 template<typename T>
@@ -79,6 +90,32 @@ VectorStat<T>::~VectorStat() {
     delete members;
 }
 
+template<typename T>
+std::string VectorStat<T>::toCsvString() const {
+    std::stringstream ss;
+    for (int i = 0; i < members->size(); i++) {
+        ss << this->name
+           << "[" << i << "]: "
+           << this->members->operator[](i) << ","
+           << this->unit << ","
+           << this->description
+           << std::endl;
+    }
+    return ss.str();
+};
+
+template<typename T>
+std::string VectorStat<T>::toCsvString(std::function<std::string(uint64_t)> mappingFun) const {
+    std::stringstream ss;
+    for (uint64_t i = 0; i < members->size(); i++) {
+        ss << mappingFun(i) << ","
+           << this->members->operator[](i) << ","
+           << this->unit << ","
+           << std::endl;
+    }
+    return ss.str();
+}
+
 /***************************************/
 /* Defining Statistics Class Functions */
 /***************************************/
@@ -87,23 +124,57 @@ void Statistics::print_stats() const {
     std::function<std::string(uint64_t)> cmdToString=[&] (uint64_t index) -> std::string {return commandString[index] + " count";};
     std::function<std::string(uint64_t)> cmdToStringCycles=[&] (uint64_t index) -> std::string {return commandString[index] + " cycles";};
     std::cout
-              << cmdCount->toString(cmdToString) << std::endl
-              << cmdCycles->toString(cmdToStringCycles) << std::endl
-              << totalCycleCount->toString() << std::endl
-              << totalActStandbyCycles->toString()
-              << totalPreStandbyCycles->toString() << std::endl
-              << totalReadEnergy->toString()
-              << totalWriteEnergy->toString()
-              << totalPreCmdEnergy->toString()
-              << totalActCmdEnergy->toString()
-              << totalPrechargeStandbyEnergy->toString()
-              << totalActiveStandbyEnergy->toString()
-              << totalEnergy->toString()
-              << avgPower->toString()
-              << avgCurrent->toString();
+            << cmdCount->toString(cmdToString) << std::endl
+            << cmdCycles->toString(cmdToStringCycles) << std::endl
+            << totalCycleCount->toString() << std::endl
+            << totalActStandbyCycles->toString()
+            << totalPreStandbyCycles->toString() << std::endl
+            << totalReadEnergy->toString()
+            << totalWriteEnergy->toString()
+            << totalPreCmdEnergy->toString()
+            << totalActCmdEnergy->toString()
+            << totalPrechargeStandbyEnergy->toString()
+            << totalActiveStandbyEnergy->toString()
+            << totalEnergy->toString()
+            << avgPower->toString()
+            << avgCurrent->toString();
 }
 
-Statistics::Statistics(uint64_t (&structCount)[int(Level::MAX)]) {
+void Statistics::write_csv(std::string *csvFilename) const {
+    msg::error(csvFilename == nullptr, DBG_STR + "nullptr passed for csv file.");
+
+    std::ofstream csvFs(*csvFilename);
+
+    std::function<std::string(uint64_t)> cmdToString =
+            [&] (uint64_t index) -> std::string {
+                return commandString[index] + " count";
+            };
+
+    std::function<std::string(uint64_t)> cmdToStringCycles =
+            [&] (uint64_t index) -> std::string {
+                return commandString[index] + " cycles";
+            };
+
+    csvFs << "stat,value,unit,description" << std::endl
+          << cmdCount->toCsvString(cmdToString)
+          << cmdCycles->toCsvString(cmdToStringCycles)
+          << totalCycleCount->toCsvString()
+          << totalActStandbyCycles->toCsvString()
+          << totalPreStandbyCycles->toCsvString()
+          << totalReadEnergy->toCsvString()
+          << totalWriteEnergy->toCsvString()
+          << totalPreCmdEnergy->toCsvString()
+          << totalActCmdEnergy->toCsvString()
+          << totalPrechargeStandbyEnergy->toCsvString()
+          << totalActiveStandbyEnergy->toCsvString()
+          << totalEnergy->toCsvString()
+          << avgPower->toCsvString()
+          << avgCurrent->toCsvString();
+    msg::info("Stats written as csv to `" + *csvFilename + "'.");
+}
+
+Statistics::Statistics(uint64_t (&structCount)[int(Level::MAX)], std::string *csvFilename) {
+    this->csvFilename = csvFilename;
     this->structCount = structCount;
 
     totalEnergy.reset(new ScalarStat<double_t>(

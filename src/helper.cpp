@@ -62,6 +62,17 @@ namespace Helper {
         }
         return 0;
     }
+
+    std::vector<std::string> splitStr(const std::string str, const char token) {
+        std::vector<std::string> result;
+        std::istringstream f(str);
+
+        std::string temp;
+        while (getline(f, temp, token)) {
+            result.push_back(temp);
+        }
+        return result;
+    }
 }
 
 /*******************/
@@ -84,7 +95,7 @@ const std::string msg::currentDateTime() {
 void msg::error(bool cond, std::string msg, int status) {
     if (cond) {
         std::cout << "[" << currentDateTime() << "] ";
-        std::cout << RED << msg << RESET << std::endl;
+        std::cout << RED << "Error: " << msg << RESET << std::endl;
         exit(status);
     }
 }
@@ -110,7 +121,7 @@ void msg::warning(bool cond, std::string msg) {
 }
 void msg::warning(std::string msg) {
     std::cout << "[" << currentDateTime() << "] ";
-    std::cout << MAGENTA << msg << RESET << std::endl;
+    std::cout << MAGENTA << "Warning: " << msg << RESET << std::endl;
 }
 
 
